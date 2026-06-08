@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    D-5 Carbon Mono mic-button pulse ring. Hollow ring drawn by overlaying
+    a transparent inner oval on a semi-transparent accent outer oval.
+    Driven by the amplitude animation in WhisperKeyboard to fade each ring
+    as the voice level rises and falls.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/carbon_pulse" />
+        </shape>
+    </item>
+    <item
+        android:top="6dp"
+        android:bottom="6dp"
+        android:left="6dp"
+        android:right="6dp">
+        <shape android:shape="oval">
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+</layer-list>

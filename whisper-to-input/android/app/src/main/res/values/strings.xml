@@ -1,0 +1,137 @@
+<resources>
+    <!-- General -->
+    <string name="app_name">Voice Keyboard</string>
+    <string name="enter_text">テキストを入力</string>
+    <string name="whisper_to_input">✦ Voice Keyboard ✦</string>
+    <string name="empty_string" />
+    <string name="loading">読み込み中…</string>
+
+    <!-- Keyboard -->
+    <string name="recording">録音中…</string>
+    <string name="transcribing">文字起こし中…</string>
+    <string name="start_speech_to_text">音声入力を開始</string>
+    <string name="start_transcribing">文字起こしを開始</string>
+    <string name="grant_microphone_permission">マイク権限を許可</string>
+    <string name="mic_permission_required">Voice Keyboardを使うにはマイク権限が必要です。</string>
+    <string name="notification_permission_required">Voice Keyboardを使うには通知権限が必要です。</string>
+    <string name="microphone">マイク</string>
+    <string name="successfully_set">設定しました</string>
+    <string name="backspace_button_hint">バックスペース</string>
+    <string name="btn_previous_ime_hint">前の入力方式に切替</string>
+    <string name="btn_at_symbol_hint">@ を挿入</string>
+    <string name="btn_question_mark_hint">？ を挿入</string>
+    <string name="btn_punct_period_hint">。 を挿入</string>
+    <string name="btn_punct_comma_hint">、 を挿入</string>
+    <string name="btn_space_inline_hint">スペースを挿入</string>
+    <string name="qw_katakana_hint">ひらがな→カタカナ変換</string>
+    <string name="btn_newline_hint">改行を挿入</string>
+    <string name="btn_number_toggle_hint">数字パッド切替</string>
+    <string name="btn_cursor_left_hint">カーソルを左へ</string>
+    <string name="btn_cursor_right_hint">カーソルを右へ</string>
+    <string name="btn_send_hint">送信 (IME_ACTION_SEND)</string>
+    <string name="btn_pad_page_switch_hint">パッドページ切替</string>
+    <string name="btn_assistant_hint">アシスタントモード（タップ：スタイル切替）</string>
+    <string name="btn_conv_toggle_hint">アシスタント会話モード切替</string>
+    <string name="btn_clear_all_hint">クリア（タップ：5字削除／長押し：全削除）</string>
+    <string name="btn_edit_mode_hint">編集モード切替（QWERTY）</string>
+    <string name="btn_ime_picker_hint">IMEピッカー表示（日本語入力はGboardへ）</string>
+    <string name="qw_kana_hint">ローマ字→ひらがなモード切替</string>
+    <string name="qw_henkan_hint">直近のひらがなを漢字変換</string>
+    <string name="conv_user_label">あなた</string>
+    <string name="conv_assistant_label">アシスタント</string>
+    <string name="conv_status_idle">マイクで話しかけてください</string>
+    <string name="conv_status_recording">録音中…</string>
+    <string name="conv_status_thinking">アシスタント考え中…</string>
+    <string name="generate_logcat">最新ログを生成</string>
+
+    <!-- Warning and Error Messages -->
+    <string name="error_endpoint_unset">エラー：設定でエンドポイントが指定されていません。</string>
+    <string name="error_apikey_unset">エラー：設定でOpenAI APIキーが指定されていません。</string>
+
+    <!-- Settings -->
+    <string name="whisper_to_input_settings_title">✦ Voice Keyboard — 設定</string>
+    <string name="settings_btn_apply">適用する</string>
+
+    <string name="settings_speech_to_text_backend">🎙 音声認識バックエンド</string>
+    <string name="settings_speech_to_text_backend_desc">公式のOpenAI API、Whisper ASR Webservice、またはNVIDIA NIMバックエンドを選択します。</string>
+    <string name="settings_option_openai_api">OpenAI API</string>
+    <string name="settings_option_openai_api_default_endpoint">https://api.openai.com/v1/audio/transcriptions</string>
+    <string name="settings_option_openai_api_default_model">whisper-1</string>
+    <string name="settings_option_openai_api_default_language">auto</string>
+    <string name="settings_option_whisper_asr_webservice">Whisper ASR Webservice</string>
+    <string name="settings_option_whisper_asr_webservice_default_endpoint">http://YOUR_PROXY_HOST:9090/asr</string>
+    <string name="settings_option_whisper_asr_webservice_default_model"></string>
+    <string name="settings_option_nvidia_nim">NVIDIA NIM</string>
+    <string name="settings_option_nvidia_nim_default_endpoint">http://YOUR_PROXY_HOST:9090/v1/audio/transcriptions</string>
+    <string name="settings_option_nvidia_nim_default_model"></string>
+    <string name="settings_option_nvidia_nim_default_language">multi</string>
+    <string-array name="settings_speech_to_text_backend_array">
+        <item>@string/settings_option_openai_api</item>
+        <item>@string/settings_option_whisper_asr_webservice</item>
+        <item>@string/settings_option_nvidia_nim</item>
+    </string-array>
+
+    <string name="settings_endpoint">🔗 エンドポイント</string>
+    <string name="settings_endpoint_desc">OpenAI API／Whisper ASR Webservice／NVIDIA NIM の接続先（ホスト＋ポート）。</string>
+    <string name="settings_endpoint_hint"><![CDATA[例：http://<host>:<port>/asr]]></string>
+
+    <string name="settings_language_code">🌐 言語コード</string>
+    <string name="settings_language_code_desc">リクエストに含める言語コード（例：ja, en, zh）。</string>
+    <string name="settings_language_code_hint">言語コードを入力（例：ja, en, zh）</string>
+
+    <string name="settings_api_key">🔑 APIキー</string>
+    <string name="settings_api_key_desc">リクエストで使用するOpenAI公式APIキー。</string>
+    <string name="settings_api_key_hint">OpenAI APIキーを入力…</string>
+
+    <string name="settings_model">🤖 モデル</string>
+    <string name="settings_model_desc">文字起こしに使うモデル（例：whisper-1）。</string>
+    <string name="settings_model_hint">モデル名を入力（例：whisper-1）</string>
+
+    <string name="settings_option_yes">はい</string>
+    <string name="settings_option_no">いいえ</string>
+
+    <string name="settings_auto_recording_start">⏺ 自動で録音開始</string>
+    <string name="settings_auto_recording_start_desc">キーボードを開いた瞬間に自動で録音を始めます。</string>
+    <string-array name="settings_auto_recording_start_array">
+        <item>@string/settings_option_yes</item>
+        <item>@string/settings_option_no</item>
+    </string-array>
+
+    <string name="settings_auto_switch_back">↩ 自動で前のキーボードに戻る</string>
+    <string name="settings_auto_switch_back_desc">文字起こし完了後、自動で前のキーボードへ切り替えます。</string>
+    <string-array name="settings_auto_switch_back_array">
+        <item>@string/settings_option_yes</item>
+        <item>@string/settings_option_no</item>
+    </string-array>
+
+    <string name="settings_add_trailing_space">␣ 末尾にスペースを追加</string>
+    <string name="settings_add_trailing_space_desc">文字起こし結果の末尾に半角スペースを付けます。</string>
+    <string-array name="settings_add_trailing_space_array">
+        <item>@string/settings_option_yes</item>
+        <item>@string/settings_option_no</item>
+    </string-array>
+
+    <string name="settings_postprocessing">✨ 後処理</string>
+    <string name="settings_postprocessing_desc">文字起こし結果のテキスト変換方法を選びます。</string>
+    <string name="settings_option_to_traditional">繁体字へ変換</string>
+    <string name="settings_option_to_simplified">簡体字へ変換</string>
+    <string name="settings_option_no_conversion">変換しない</string>
+    <string-array name="settings_postprocessing_array">
+        <item>@string/settings_option_to_traditional</item>
+        <item>@string/settings_option_to_simplified</item>
+        <item>@string/settings_option_no_conversion</item>
+    </string-array>
+    <string name="desc_space_bar">スペースキー</string>
+
+    <!-- Phase 5 (2026-05-07) — post-edit feedback loop settings -->
+    <string name="settings_feedback_enabled">📡 編集フィードバックを送信</string>
+    <string name="settings_feedback_enabled_desc">ONにすると、編集後のテキストをproxyの /feedback エンドポイントへ送り、整文プロンプトの改善学習に使われます。機微なフィールドではOFFにしてください。</string>
+    <string-array name="settings_feedback_enabled_array">
+        <item>@string/settings_option_yes</item>
+        <item>@string/settings_option_no</item>
+    </string-array>
+    <string name="settings_user_name">👤 ユーザー名</string>
+    <string name="settings_user_name_desc">/feedbackに付与する短い識別子（自分の名前など）。学習側がユーザー別に分割するために使います。空欄なら匿名扱い。</string>
+    <string name="settings_user_name_hint">例：user1</string>
+
+</resources>

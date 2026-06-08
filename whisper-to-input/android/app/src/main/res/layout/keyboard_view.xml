@@ -1,0 +1,1027 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    This file is part of Whisper To Input, see <https://github.com/j3soon/whisper-to-input>.
+
+    Copyright (c) 2023-2025 Yan-Bin Diau, Johnson Sun
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+-->
+<!--
+    Phase 2b layout — Typeless-style reorganization.
+
+    Top row: IME switch on the left; @ / space / backspace / settings as a
+    compact icon row on the right.
+    Middle:  status label + large mic button (with cancel/retry overlay).
+    Bottom:  single 改行 button, centered.
+
+    The original large space bar and enter ↩ button have been removed from the
+    visible layout (the enter button is kept as visibility="gone" so the
+    existing Kotlin lifecycle — "during recording, enter = stop + transcribe +
+    \n" — is not broken; users just invoke that flow via the 改行 button or
+    the mic button instead).
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Background"
+    android:id="@+id/keyboard_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_gravity="bottom"
+    android:clipToPadding="false"
+    android:paddingBottom="12dp">
+
+    <View
+        style="@style/TopBar"
+        android:id="@+id/view_top_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- ─── Top row (Phase 5c) ──────────────────────────────────────────
+         Phase 5c (2026-05-07): btn_edit_mode (ABC) was previously anchored
+         below btn_send and got *visually overlapped by the 123 number pad's
+         "1" cell* whenever the user tapped 123 from edit mode. Same risk
+         existed for the Phase 5b btn_ime_picker (🌐). Both are now
+         hoisted into this top icon row so they sit *above* every keypad
+         and never collide with digit/QWERTY cells regardless of which
+         pad is on screen.
+
+         To keep the row from blowing past 1080px on S25, the row is split
+         into two horizontal LinearLayouts stacked vertically (top_icon_row
+         is a vertical wrapper). Layout strategy: 2 sub-rows.
+           Sub-row A: [assistant-style] [assistant-conv] [ABC] [🌐]
+           Sub-row B: [123] [⌫] [◀] [▶] [⚙]
+         This keeps each sub-row at ≤6 children so widths don't crunch.
+
+         The IME-switcher (btn_previous_ime), @-symbol and space-bar are
+         retained as visibility="gone" siblings below so the Kotlin
+         findViewById + setOnClickListener wiring keeps compiling. -->
+
+    <LinearLayout
+        android:id="@+id/top_icon_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="6dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view_top_bar">
+
+        <!-- Sub-row A: assistant-style / assistant-conv / ABC / 🌐 -->
+        <LinearLayout
+            android:id="@+id/top_icon_row_a"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Assistant LEFT: short tap cycles refine style. Flexes via weight=1. -->
+            <TextView
+                style="@style/RegularText"
+                android:id="@+id/btn_assistant"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:minWidth="0dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:background="@drawable/carbon_button_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:textStyle="bold"
+                android:textColor="@color/carbon_fg_primary"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="📝 そのまま"
+                android:contentDescription="@string/btn_assistant_hint" />
+
+            <!-- Assistant RIGHT: tap toggles conversation mode. Flexes via weight=1. -->
+            <TextView
+                style="@style/RegularText"
+                android:id="@+id/btn_conv_toggle"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:minWidth="0dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:background="@drawable/carbon_button_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:textStyle="bold"
+                android:textColor="@color/carbon_fg_primary"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="💬 アシスタント"
+                android:contentDescription="@string/btn_conv_toggle_hint" />
+
+            <!-- Phase 5c: btn_edit_mode (ABC) hoisted from below btn_send.
+                 Always visible regardless of mode so user can flip in/out
+                 of edit mode at any time. -->
+            <TextView
+                style="@style/RegularText"
+                android:id="@+id/btn_edit_mode"
+                android:layout_width="76dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="4dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:background="@drawable/carbon_button_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="✏️ 修正"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:contentDescription="@string/btn_edit_mode_hint" />
+
+            <!-- Phase 5c: btn_ime_picker (🌐) hoisted from below btn_send.
+                 Visible only while in edit mode (toggled in
+                 WhisperKeyboard.toggleEditMode()) so it doesn't clutter
+                 voice mode. -->
+            <TextView
+                style="@style/RegularText"
+                android:id="@+id/btn_ime_picker"
+                android:layout_width="40dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/carbon_button_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="🌐"
+                android:textSize="14sp"
+                android:visibility="gone"
+                android:contentDescription="@string/btn_ime_picker_hint" />
+        </LinearLayout>
+
+        <!-- Sub-row B: 123 / ⌫ / ◀ / ▶ / ⚙ -->
+        <LinearLayout
+            android:id="@+id/top_icon_row_b"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                style="@style/RegularText"
+                android:id="@+id/btn_number_toggle"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="123"
+                android:textSize="14sp"
+                android:contentDescription="@string/btn_number_toggle_hint" />
+
+            <com.example.whispertoinput.keyboard.BackspaceButton
+                style="@style/RegularImage"
+                android:id="@+id/btn_backspace"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:backgroundTint="#00000000"
+                android:contentDescription="@string/backspace_button_hint"
+                android:padding="6dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/btn_backspace" />
+
+            <TextView
+                style="@style/RegularText"
+                android:id="@+id/btn_cursor_left"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="◀"
+                android:textSize="14sp"
+                android:contentDescription="@string/btn_cursor_left_hint" />
+
+            <!-- Phase 9 (2026-05-11): ◀▶ の間にスペース挿入ボタンを追加。
+                 既存 btn_space_bar (gone) と区別するため btn_space_inline。
+                 背景は ◀ / ▶ / 123 / 🛠 と同じ borderless ripple にして周囲と同化。 -->
+            <TextView
+                style="@style/RegularText"
+                android:id="@+id/btn_space_inline"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="␣"
+                android:textSize="16sp"
+                android:contentDescription="@string/btn_space_inline_hint" />
+
+            <TextView
+                style="@style/RegularText"
+                android:id="@+id/btn_cursor_right"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="▶"
+                android:textSize="14sp"
+                android:contentDescription="@string/btn_cursor_right_hint" />
+
+            <TextView
+                style="@style/RegularText"
+                android:id="@+id/btn_settings"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="🛠"
+                android:textSize="16sp"
+                android:contentDescription="@string/btn_previous_ime_hint" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Hidden legacy controls: kept so Kotlin findViewById wiring still
+         resolves. btn_previous_ime is dynamically shown by WhisperKeyboard
+         when shouldOfferImeSwitch=true; @ and space remain as accessible
+         off-screen entry points. -->
+
+    <ImageButton
+        style="@style/RegularImage"
+        android:id="@+id/btn_previous_ime"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:src="@drawable/btn_previous_ime"
+        android:contentDescription="@string/btn_previous_ime_hint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        style="@style/RegularText"
+        android:id="@+id/btn_at_symbol"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:text="@"
+        android:contentDescription="@string/btn_at_symbol_hint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        style="@style/RegularImage"
+        android:id="@+id/btn_space_bar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:src="@drawable/btn_space_bar"
+        android:contentDescription="@string/desc_space_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- ─── "whisper to input" status label (centered above the mic, sits
+         below the アシスタント button row). -->
+
+    <TextView
+        style="@style/RegularText"
+        android:id="@+id/label_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/whisper_to_input"
+        android:fontFamily="sans-serif-light"
+        android:letterSpacing="0.18"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_mic_frame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_icon_row" />
+
+    <FrameLayout
+        android:id="@+id/btn_mic_frame"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/label_status">
+
+        <ImageButton
+            android:id="@+id/btn_mic"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:background="#00FFFFFF"
+            android:contentDescription="@string/start_speech_to_text"
+            android:scaleType="fitCenter"
+            android:src="@drawable/mic_idle" />
+
+        <ProgressBar
+            android:id="@+id/pb_waiting_icon"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:layout_margin="10dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:visibility="invisible" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mic_ripples"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/mic_ripple_0"
+                android:layout_width="107dp"
+                android:layout_height="107dp"
+                android:alpha="0"
+                android:src="@drawable/mic_ripple_0"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/mic_ripple_1"
+                android:layout_width="115dp"
+                android:layout_height="115dp"
+                android:alpha="0"
+                android:src="@drawable/mic_ripple_1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/mic_ripple_2"
+                android:layout_width="123dp"
+                android:layout_height="123dp"
+                android:alpha="0"
+                android:src="@drawable/mic_ripple_2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/mic_ripple_3"
+                android:layout_width="131dp"
+                android:layout_height="131dp"
+                android:alpha="0"
+                android:src="@drawable/mic_ripple_3"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+
+    <!-- Cancel overlay (visible only while recording/transcribing) -->
+    <ImageButton
+        style="@style/RegularImage"
+        android:id="@+id/btn_cancel"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="#00FFFFFF"
+        android:contentDescription=""
+        android:scaleType="fitCenter"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/btn_cancel"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="@+id/btn_mic_frame"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_mic_frame"
+        app:layout_constraintEnd_toStartOf="@+id/btn_mic_frame" />
+
+    <!-- Retry button removed from view (user feedback: circular arrow was confusing
+         and served no clear purpose). Kept as visibility="gone" so WhisperKeyboard's
+         findViewById + setKeyboardStatus logic still resolves. -->
+    <ImageButton
+        style="@style/RegularImage"
+        android:id="@+id/btn_retry"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:src="@drawable/btn_retry"
+        android:contentDescription=""
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Hidden: the old Enter ↩ button is retained so the recording-stop-
+         with-newline code path in WhisperKeyboard.kt keeps compiling, but
+         no longer shown on screen. The visible 改行 button below always
+         inserts "\n", which covers the user-facing use case. -->
+    <ImageButton
+        style="@style/RegularImage"
+        android:id="@+id/btn_enter"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:src="@drawable/btn_enter"
+        android:contentDescription="@string/start_transcribing"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ─── Mic flankers: ゴミ箱 (clear-all) on the left, 改行 (↵) on the
+         right. Send (paper airplane) moves down below the mic per user's
+         position-swap request. -->
+
+    <TextView
+        android:id="@+id/btn_clear_all"
+        style="@style/RegularText"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="14dp"
+        android:background="@drawable/carbon_button_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/btn_clear_all_hint"
+        android:gravity="center"
+        android:text="🗑"
+        android:textSize="26sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_mic_frame"
+        app:layout_constraintEnd_toStartOf="@+id/btn_mic_frame"
+        app:layout_constraintTop_toTopOf="@+id/btn_mic_frame" />
+
+    <TextView
+        style="@style/RegularText"
+        android:id="@+id/btn_newline"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="14dp"
+        android:background="@drawable/carbon_button_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="↩️"
+        android:textSize="24sp"
+        android:contentDescription="@string/btn_newline_hint"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_mic_frame"
+        app:layout_constraintStart_toEndOf="@+id/btn_mic_frame"
+        app:layout_constraintTop_toTopOf="@+id/btn_mic_frame" />
+
+    <!-- ─── Bottom row: 「。」「？」「🚀」 centered below the mic.
+         Phase 9 (2026-05-11): 句読点ボタン (。) と既存の ❓ を btn_send の左に
+         並べる。btn_send は parent中央配置を維持し、qwerty_pad / number_pad の
+         top_toBottomOf="btn_send" の参照を壊さないようにする。 -->
+
+    <TextView
+        android:id="@+id/btn_send"
+        style="@style/RegularText"
+        android:layout_width="64dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/carbon_button_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/btn_send_hint"
+        android:gravity="center"
+        android:text="🚀"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_mic_frame" />
+
+    <!-- 「。」「？」は 🚀(64x48) より一段小さい 44x40。base を 🚀 の bottom に
+         合わせて下端揃え、textSizeも控えめにして🚀を主役のまま左に従える。 -->
+    <TextView
+        android:id="@+id/btn_question_mark"
+        style="@style/RegularText"
+        android:layout_width="44dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/btn_question_mark_hint"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="❓"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_send"
+        app:layout_constraintEnd_toStartOf="@+id/btn_send" />
+
+    <TextView
+        android:id="@+id/btn_punct_period"
+        style="@style/RegularText"
+        android:layout_width="44dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/btn_punct_period_hint"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="。"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_send"
+        app:layout_constraintEnd_toStartOf="@+id/btn_question_mark" />
+
+    <!-- 「、」ボタン。「。」のさらに左、左から「、」「。」「？」「🚀」の並び -->
+    <TextView
+        android:id="@+id/btn_punct_comma"
+        style="@style/RegularText"
+        android:layout_width="44dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/btn_punct_comma_hint"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text="、"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_send"
+        app:layout_constraintEnd_toStartOf="@+id/btn_punct_period" />
+
+    <!-- Phase 5c (2026-05-07): btn_edit_mode (ABC) and btn_ime_picker (🌐)
+         have been moved into top_icon_row above. The previous below-send
+         placement caused the ABC label to visually overlap the "1" key of
+         the 123 number pad whenever the user toggled the pad from edit
+         mode (both anchored their parent at the same Y as btn_send's
+         bottom). Placement is now safely above all keypads. -->
+
+    <!-- ─── Phase 5: QWERTY edit-mode keypad ─────────────────────────────
+         Hidden by default. Shown when btn_edit_mode is tapped. Each cell
+         is a TextView whose displayed glyph is committed verbatim via
+         onDigit() — same path used by the existing 123 number pad. Shift
+         (uppercase) is implemented in Kotlin by re-painting the cell
+         labels; backspace re-uses the existing btn_backspace callback
+         path through onClearChunk() (≈ 1-char delete). Send / cursor /
+         space buttons reuse onSend / onCursorLeft|Right / onSpaceBar.
+
+         Layout — 4 rows × 10 columns, weight=1 cells. Mirrors a stock
+         English QWERTY layout. Japanese flick is intentionally out of
+         scope (the IME is voice-first; users wanting flick swap to a
+         system keyboard via the IME-switch button). -->
+    <LinearLayout
+        android:id="@+id/qwerty_pad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/btn_send"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Row 1: q w e r t y u i o p -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <TextView android:id="@+id/qw_q" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="q" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_w" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="w" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_e" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="e" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_r" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="r" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_t" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="t" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_y" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="y" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_u" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="u" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_i" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="i" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_o" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="o" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_p" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="p" android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Row 2: a s d f g h j k l (9 keys, weight 1, with 0.5 padding on each side) -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <View android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="0.5" />
+            <TextView android:id="@+id/qw_a" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="a" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_s" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="s" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_d" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="d" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_f" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="f" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_g" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="g" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_h" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="h" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_j" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="j" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_k" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="k" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_l" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="l" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_long_vowel" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="0.5" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="ー" android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Row 3: shift z x c v b n m backspace -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <TextView android:id="@+id/qw_shift" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1.5" android:background="@drawable/carbon_button_bg" android:clickable="true" android:focusable="true" android:gravity="center" android:text="⇧" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_z" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="z" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_x" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="x" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_c" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="c" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_v" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="v" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_b" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="b" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_n" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="n" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_m" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1" android:background="?android:attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:gravity="center" android:text="m" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_bs" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1.5" android:background="@drawable/carbon_button_bg" android:clickable="true" android:focusable="true" android:gravity="center" android:text="⌫" android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Row 4: かな ◀ space ▶ send
+             Phase 6 #2 (2026-05-07): added "かな" toggle for rōmaji→hiragana
+             input. When active, letter cell taps feed a romaji buffer that is
+             displayed as composing text and converted on-the-fly. -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <TextView android:id="@+id/qw_kana"     style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1.4" android:background="@drawable/carbon_button_bg" android:clickable="true" android:focusable="true" android:gravity="center" android:text="🅰 かな" android:textSize="12sp" android:textStyle="bold" android:contentDescription="@string/qw_kana_hint" />
+            <TextView android:id="@+id/qw_henkan"   style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1.6" android:background="@drawable/carbon_button_bg" android:clickable="true" android:focusable="true" android:gravity="center" android:text="🈯 漢字" android:textSize="12sp" android:textStyle="bold" android:contentDescription="@string/qw_henkan_hint" />
+            <TextView android:id="@+id/qw_katakana" style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1.6" android:background="@drawable/carbon_button_bg" android:clickable="true" android:focusable="true" android:gravity="center" android:text="🌏 カナ" android:textSize="12sp" android:textStyle="bold" android:contentDescription="@string/qw_katakana_hint" />
+            <TextView android:id="@+id/qw_left"     style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="0.7" android:background="@drawable/carbon_button_bg" android:clickable="true" android:focusable="true" android:gravity="center" android:text="◀" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_space"    style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="1.6" android:background="@drawable/carbon_button_bg" android:clickable="true" android:focusable="true" android:gravity="center" android:text="␣ space" android:textSize="12sp" />
+            <TextView android:id="@+id/qw_right"    style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="0.7" android:background="@drawable/carbon_button_bg" android:clickable="true" android:focusable="true" android:gravity="center" android:text="▶" android:textSize="16sp" />
+            <TextView android:id="@+id/qw_send"     style="@style/RegularText" android:layout_width="0dp" android:layout_height="42dp" android:layout_weight="2.4" android:background="@drawable/carbon_button_bg" android:clickable="true" android:focusable="true" android:gravity="center" android:text="✅ 確定" android:textSize="13sp" android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ─── Phase 6 #1: 対話モード専用ウィンドウ (conversation window) ────
+         Hidden by default. Surfaced when the assistant conversation mode is ON
+         AND the user has begun a turn — replaces the regular voice / QWERTY
+         frames so that アシスタントの応答 doesn't pollute the target app's text
+         field. The user can then choose to commit only the final reply, or
+         discard the whole exchange.
+
+         Internals:
+           - conv_history (ScrollView/LinearLayout): time-ordered messages,
+             user vs アシスタント distinguished by background tint and label.
+           - conv_input_label: shows the current draft / status (mic ready,
+             thinking…, etc).
+           - 3-button footer: 最終応答を送信 / 丸ごと破棄 / 対話終了.
+
+         The mic button still works while this window is visible — we keep
+         the mic frame on screen above the history. The user speaks, the
+         transcription runs through the proxy with conversation_mode=1, and
+         instead of committing to the target app the IME appends the user
+         input + アシスタント reply pair to conv_history. -->
+    <LinearLayout
+        android:id="@+id/conv_window"
+        style="@style/Background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginTop="4dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/btn_mic_frame"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/conv_title"
+            style="@style/RegularText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="アシスタント対話モード"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:paddingBottom="4dp" />
+
+        <ScrollView
+            android:id="@+id/conv_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@drawable/carbon_button_bg"
+            android:padding="6dp"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/conv_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/conv_status"
+            style="@style/RegularText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="マイクで話しかけてください"
+            android:textSize="12sp"
+            android:paddingTop="6dp"
+            android:paddingBottom="4dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/btn_conv_send_final"
+                style="@style/RegularText"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:background="@drawable/carbon_button_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="最終応答送信"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btn_conv_discard"
+                style="@style/RegularText"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/carbon_button_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="丸ごと破棄"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/btn_conv_close"
+                style="@style/RegularText"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/carbon_button_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="対話終了"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Calculator-style pad — 2-page GridLayout, toggled by btn_number_toggle (123).
+         Page 1: digits (0-9) + common symbols (. , : / -).
+         Page 2: extended symbols (¥ % & # @ ! ? * ( ) " ' + = ~).
+         btn_pad_page_switch flips between pages. Each cell commits its text
+         to the current field via onDigit() — same callback reused for digits
+         & symbols (both are single-character insertions). -->
+    <LinearLayout
+        android:id="@+id/number_pad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_send">
+
+        <!-- Page 1: digits + common symbols -->
+        <LinearLayout
+            android:id="@+id/pad_page_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:id="@+id/btn_digit_1" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="1" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_digit_2" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="2" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_digit_3" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="3" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p1_period" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="." android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:id="@+id/btn_digit_4" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="4" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_digit_5" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="5" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_digit_6" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="6" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p1_comma" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="," android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:id="@+id/btn_digit_7" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="7" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_digit_8" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="8" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_digit_9" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="9" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p1_colon" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text=":" android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:id="@+id/btn_pad_page_switch" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center" android:text="#+=" android:textSize="14sp"
+                    android:contentDescription="@string/btn_pad_page_switch_hint" />
+                <TextView android:id="@+id/btn_digit_0" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="0" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p1_slash" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="/" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p1_minus" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="-" android:textSize="18sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Page 2: extended symbols -->
+        <LinearLayout
+            android:id="@+id/pad_page_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:id="@+id/btn_sym_p2_yen" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="¥" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_percent" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="%" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_amp" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="&amp;" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_hash" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="#" android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:id="@+id/btn_sym_p2_at" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="@" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_excl" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="!" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_q" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="?" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_star" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="*" android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:id="@+id/btn_sym_p2_paren_open" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="(" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_paren_close" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text=")" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_dquote" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="&quot;" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_squote" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="\'" android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                <TextView android:id="@+id/btn_pad_page_switch_2" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center" android:text="123" android:textSize="14sp"
+                    android:contentDescription="@string/btn_pad_page_switch_hint" />
+                <TextView android:id="@+id/btn_sym_p2_plus" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="+" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_eq" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="=" android:textSize="18sp" />
+                <TextView android:id="@+id/btn_sym_p2_tilde" style="@style/RegularText"
+                    android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true" android:focusable="true"
+                    android:gravity="center" android:text="~" android:textSize="18sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

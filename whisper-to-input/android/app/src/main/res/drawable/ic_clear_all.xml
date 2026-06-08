@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Trash can icon (monochrome). Re-tinted by RegularImage style. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/carbon_fg_primary">
+
+    <!-- Lid bar -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M4,6 L20,6 L20,8 L4,8 Z" />
+
+    <!-- Lid handle -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M9,3 L15,3 L15,5 L9,5 Z" />
+
+    <!-- Body with slight taper -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M6,9 L18,9 L16.5,21 L7.5,21 Z" />
+
+    <!-- Negative-space inner ribs: lift body outline so center looks hollow -->
+    <path
+        android:fillColor="#F7F7F7"
+        android:pathData="M9.5,11 L10.5,11 L10,19 L9.5,19 Z
+                         M12,11 L13,11 L12.5,19 L12,19 Z
+                         M14.5,11 L15.5,11 L15,19 L14.5,19 Z" />
+</vector>

@@ -1,0 +1,30 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.WhisperToInput" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    </style>
+
+    <!-- D-5 Carbon Mono (dark). Light foreground on near-black carbon bg. -->
+    <style name="RegularImage">
+        <item name="android:tint">@color/carbon_fg_primary</item>
+    </style>
+
+    <style name="RegularText">
+        <item name="android:textColor">@color/carbon_fg_primary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="Background">
+        <item name="android:background">@color/carbon_bg</item>
+    </style>
+
+    <style name="TopBar">
+        <item name="android:background">@color/carbon_divider</item>
+    </style>
+
+    <style name="CarbonKeyCap">
+        <item name="android:background">@drawable/carbon_button_bg</item>
+    </style>
+
+</resources>
