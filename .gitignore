@@ -1,0 +1,29 @@
+# ---- secrets & personal data ----
+config.json
+*.env
+secrets.env
+# personal proper-noun dictionary — never publish
+dictionary/
+# real transcription / refine usage logs
+proxy/logs/
+*.log
+
+# ---- python ----
+proxy/.venv/
+__pycache__/
+*.pyc
+
+# ---- android / gradle ----
+*.apk
+*.deb
+build/
+.gradle/
+local.properties
+*.keystore
+*.jks
+
+# ---- local release artifacts ----
+apk/
+
+# ---- misc ----
+.DS_Store

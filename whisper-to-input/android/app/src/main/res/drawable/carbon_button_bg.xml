@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    D-5 Carbon Mono key-cap background. Rounded rectangle (8dp) with a subtle
+    divider-line border. The ripple layer on top provides touch feedback using
+    the monochrome carbon_ripple_color (dark ripple in light mode, white ripple
+    in dark mode).
+-->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/carbon_ripple_color">
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFFFF" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/carbon_surface" />
+            <corners android:radius="8dp" />
+            <stroke android:width="1dp" android:color="@color/carbon_divider" />
+        </shape>
+    </item>
+</ripple>

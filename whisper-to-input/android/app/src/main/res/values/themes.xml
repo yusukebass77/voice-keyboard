@@ -1,0 +1,92 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.WhisperToInput" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <!-- D-5 Carbon Mono aesthetic: near-black fg on near-white bg (light mode),
+         inverted in dark mode via values-night/colors.xml. -->
+    <style name="RegularImage">
+        <item name="android:tint">@color/carbon_fg_primary</item>
+    </style>
+
+    <style name="RegularText">
+        <item name="android:textColor">@color/carbon_fg_primary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="Background">
+        <item name="android:background">@color/carbon_bg</item>
+    </style>
+
+    <style name="TopBar">
+        <item name="android:background">@color/carbon_divider</item>
+    </style>
+
+    <!-- Rounded key-cap style for pad cells and bottom-row buttons. 8dp corner
+         radius, 1dp divider-line border. Applied via android:background. -->
+    <style name="CarbonKeyCap">
+        <item name="android:background">@drawable/carbon_button_bg</item>
+    </style>
+
+    <!-- Settings Page Styles — Carbon Mono aesthetic: medium-weight labels,
+         softer secondary descriptions (no italic), clean cards. -->
+    <style name="SettingsCard">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@drawable/settings_card_bg</item>
+        <item name="android:padding">18dp</item>
+        <item name="android:layout_marginBottom">14dp</item>
+        <item name="android:elevation">1dp</item>
+    </style>
+    <style name="SettingsLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/carbon_fg_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">0.03</item>
+    </style>
+    <style name="SettingsDescription">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/carbon_fg_secondary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:lineSpacingExtra">3dp</item>
+    </style>
+    <style name="SettingsField">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:inputType">text</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/carbon_fg_primary</item>
+        <item name="android:textColorHint">@color/carbon_fg_disabled</item>
+        <item name="android:padding">4dp</item>
+    </style>
+    <style name="SettingsSpinner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
+    <style name="SettingsApplyButton" parent="android:Widget.Material.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:minWidth">88dp</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:background">@drawable/settings_apply_bg</item>
+        <item name="android:textColor">@color/carbon_surface</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="Theme.WhisperToInput" parent="Base.Theme.WhisperToInput" />
+</resources>

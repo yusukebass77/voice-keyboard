@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Legacy colors retained for existing Settings activity layout compatibility. -->
+    <color name="dark_gray">#FF777777</color>
+    <color name="theme_light_grey">#d9d9d9</color>
+    <color name="theme_rich_black">#FF001A23</color>
+
+    <!-- ═══ D-5 Carbon Mono palette (light mode) ═══ -->
+    <!-- Base surfaces: near-white with a hint of warmth, carbon-inspired texture. -->
+    <color name="carbon_bg">#F7F7F7</color>
+    <color name="carbon_surface">#FFFFFF</color>
+    <color name="carbon_divider">#E4E4E4</color>
+    <!-- Foreground: near-black primary, mid-gray secondary. -->
+    <color name="carbon_fg_primary">#121212</color>
+    <color name="carbon_fg_secondary">#6B6B6B</color>
+    <color name="carbon_fg_disabled">#B0B0B0</color>
+    <!-- Accent: pure monochrome — black dot on light. -->
+    <color name="carbon_accent">#000000</color>
+    <color name="carbon_ripple_color">#22000000</color>
+    <!-- Pulse ring while recording: translucent black. -->
+    <color name="carbon_pulse">#66000000</color>
+</resources>

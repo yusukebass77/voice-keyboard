@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Paper airplane icon using Material Design's classic "send" path —
+     a recognizable dart-shaped origami plane with a visible fold crease
+     (the "notch" at x=2, y=12). Re-tinted black via RegularImage style. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/carbon_fg_primary">
+
+    <path
+        android:fillColor="#000000"
+        android:pathData="M2.01,21 L23,12 L2.01,3 L2,10 L17,12 L2,14 Z" />
+</vector>

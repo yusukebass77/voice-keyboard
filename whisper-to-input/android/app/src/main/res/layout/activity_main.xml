@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Whisper To Input settings — Carbon Mono styled. Each setting is wrapped
+    in a SettingsCard (rounded surface with subtle divider border).
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Background"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/Background"
+        android:id="@+id/settings_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            style="@style/RegularText"
+            android:id="@+id/settings_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/whisper_to_input_settings_title"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-light"
+            android:letterSpacing="0.15"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_settings_apply"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btn_settings_apply"
+            style="@style/SettingsApplyButton"
+            android:text="@string/settings_btn_apply"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/settings_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/carbon_divider"
+        app:layout_constraintTop_toBottomOf="@+id/settings_top_bar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:clipToPadding="false"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_divider">
+
+        <LinearLayout
+            android:id="@+id/settings_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="48dp"
+            android:orientation="vertical">
+
+            <!-- Endpoint -->
+            <LinearLayout style="@style/SettingsCard">
+                <TextView
+                    android:id="@+id/label_endpoint"
+                    style="@style/SettingsLabel"
+                    android:text="@string/settings_endpoint" />
+                <TextView
+                    android:id="@+id/description_endpoint"
+                    style="@style/SettingsDescription"
+                    android:text="@string/settings_endpoint_desc" />
+                <EditText
+                    android:id="@+id/field_endpoint"
+                    style="@style/SettingsField"
+                    android:hint="@string/settings_endpoint_hint" />
+            </LinearLayout>
+
+            <!-- API Key -->
+            <LinearLayout style="@style/SettingsCard">
+                <TextView
+                    android:id="@+id/label_api_key"
+                    style="@style/SettingsLabel"
+                    android:text="@string/settings_api_key" />
+                <TextView
+                    android:id="@+id/description_api_key"
+                    style="@style/SettingsDescription"
+                    android:text="@string/settings_api_key_desc" />
+                <EditText
+                    android:id="@+id/field_api_key"
+                    style="@style/SettingsField"
+                    android:hint="@string/settings_api_key_hint"
+                    android:inputType="textPassword"
+                    android:fontFamily="monospace" />
+            </LinearLayout>
+
+            <!-- Model -->
+            <LinearLayout style="@style/SettingsCard">
+                <TextView
+                    android:id="@+id/label_model"
+                    style="@style/SettingsLabel"
+                    android:text="@string/settings_model" />
+                <TextView
+                    android:id="@+id/description_model"
+                    style="@style/SettingsDescription"
+                    android:text="@string/settings_model_desc" />
+                <EditText
+                    android:id="@+id/field_model"
+                    style="@style/SettingsField"
+                    android:hint="@string/settings_model_hint" />
+            </LinearLayout>
+
+            <!-- Language Code -->
+            <LinearLayout style="@style/SettingsCard">
+                <TextView
+                    android:id="@+id/label_language_code"
+                    style="@style/SettingsLabel"
+                    android:text="@string/settings_language_code" />
+                <TextView
+                    android:id="@+id/description_language_code"
+                    style="@style/SettingsDescription"
+                    android:text="@string/settings_language_code_desc" />
+                <EditText
+                    android:id="@+id/field_language_code"
+                    style="@style/SettingsField"
+                    android:hint="@string/settings_language_code_hint" />
+            </LinearLayout>
+
+            <!-- Auto Recording Start -->
+            <LinearLayout style="@style/SettingsCard">
+                <TextView
+                    android:id="@+id/label_auto_recording_start"
+                    style="@style/SettingsLabel"
+                    android:text="@string/settings_auto_recording_start" />
+                <TextView
+                    android:id="@+id/description_auto_recording_start"
+                    style="@style/SettingsDescription"
+                    android:text="@string/settings_auto_recording_start_desc" />
+                <Spinner
+                    android:id="@+id/spinner_auto_recording_start"
+                    style="@style/SettingsSpinner"
+                    android:entries="@array/settings_auto_recording_start_array" />
+            </LinearLayout>
+
+            <!-- Auto Switch Back -->
+            <LinearLayout style="@style/SettingsCard">
+                <TextView
+                    android:id="@+id/label_auto_switch_back"
+                    style="@style/SettingsLabel"
+                    android:text="@string/settings_auto_switch_back" />
+                <TextView
+                    android:id="@+id/description_auto_switch_back"
+                    style="@style/SettingsDescription"
+                    android:text="@string/settings_auto_switch_back_desc" />
+                <Spinner
+                    android:id="@+id/spinner_auto_switch_back"
+                    style="@style/SettingsSpinner"
+                    android:entries="@array/settings_auto_switch_back_array" />
+            </LinearLayout>
+
+            <!-- Postprocessing card removed (2026-05-09): 中国語後処理は日本語運用で不要。
+                 設定値は内部的に "no_conversion" 固定として扱う。 -->
+
+            <!-- Add Trailing Space -->
+            <LinearLayout style="@style/SettingsCard">
+                <TextView
+                    android:id="@+id/label_add_trailing_space"
+                    style="@style/SettingsLabel"
+                    android:text="@string/settings_add_trailing_space" />
+                <TextView
+                    android:id="@+id/description_add_trailing_space"
+                    style="@style/SettingsDescription"
+                    android:text="@string/settings_add_trailing_space_desc" />
+                <Spinner
+                    android:id="@+id/spinner_add_trailing_space"
+                    style="@style/SettingsSpinner"
+                    android:entries="@array/settings_add_trailing_space_array" />
+            </LinearLayout>
+
+            <!-- Phase 5: Feedback Loop ON/OFF -->
+            <LinearLayout style="@style/SettingsCard">
+                <TextView
+                    android:id="@+id/label_feedback_enabled"
+                    style="@style/SettingsLabel"
+                    android:text="@string/settings_feedback_enabled" />
+                <TextView
+                    android:id="@+id/description_feedback_enabled"
+                    style="@style/SettingsDescription"
+                    android:text="@string/settings_feedback_enabled_desc" />
+                <Spinner
+                    android:id="@+id/spinner_feedback_enabled"
+                    style="@style/SettingsSpinner"
+                    android:entries="@array/settings_feedback_enabled_array" />
+            </LinearLayout>
+
+            <!-- Phase 5: User name (yusuke / amy / …) -->
+            <LinearLayout style="@style/SettingsCard">
+                <TextView
+                    android:id="@+id/label_user_name"
+                    style="@style/SettingsLabel"
+                    android:text="@string/settings_user_name" />
+                <TextView
+                    android:id="@+id/description_user_name"
+                    style="@style/SettingsDescription"
+                    android:text="@string/settings_user_name_desc" />
+                <EditText
+                    android:id="@+id/field_user_name"
+                    style="@style/SettingsField"
+                    android:hint="@string/settings_user_name_hint"
+                    android:inputType="text"
+                    android:maxLines="1" />
+            </LinearLayout>
+
+            <!-- ⚙ 詳細設定 — 通常変更不要。proxy 構成で固定運用中。 -->
+            <TextView
+                style="@style/SettingsLabel"
+                android:layout_width="match_parent"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="6dp"
+                android:gravity="start"
+                android:text="⚙ 詳細設定（通常変更不要）"
+                android:textColor="@color/carbon_fg_secondary"
+                android:textSize="13sp" />
+
+            <!-- Speech to Text Backend (moved from top — rarely changed) -->
+            <LinearLayout style="@style/SettingsCard">
+                <TextView
+                    android:id="@+id/label_speech_to_text_backend"
+                    style="@style/SettingsLabel"
+                    android:text="@string/settings_speech_to_text_backend" />
+                <TextView
+                    android:id="@+id/description_speech_to_text_backend"
+                    style="@style/SettingsDescription"
+                    android:text="@string/settings_speech_to_text_backend_desc" />
+                <Spinner
+                    android:id="@+id/spinner_speech_to_text_backend"
+                    style="@style/SettingsSpinner"
+                    android:entries="@array/settings_speech_to_text_backend_array" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ═══ D-5 Carbon Mono palette (dark mode) ═══ -->
+    <!-- Carbon-fiber inspired near-black. The surface is one step up from bg
+         so elevated elements (buttons, pad cells) read as "lifted". -->
+    <color name="carbon_bg">#0E0E0E</color>
+    <color name="carbon_surface">#1A1A1A</color>
+    <color name="carbon_divider">#2A2A2A</color>
+    <!-- Foreground: near-white, with a single accent that is *pure* white. -->
+    <color name="carbon_fg_primary">#F2F2F2</color>
+    <color name="carbon_fg_secondary">#9A9A9A</color>
+    <color name="carbon_fg_disabled">#555555</color>
+    <!-- Accent: pure white on dark — the only chromatic signal. -->
+    <color name="carbon_accent">#FFFFFF</color>
+    <color name="carbon_ripple_color">#33FFFFFF</color>
+    <!-- Pulse ring while recording: translucent white. -->
+    <color name="carbon_pulse">#66FFFFFF</color>
+</resources>
