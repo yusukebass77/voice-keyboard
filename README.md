@@ -24,6 +24,13 @@ proxy keeps your tone intact, fixes homophones in context, normalizes 旧字体 
 新字体, and can inject a personal proper-noun dictionary so names and jargon come
 out right. The result is text you can actually send.
 
+## Download
+
+Grab the Android APK from the
+[**latest release**](https://github.com/yusukebass77/voice-keyboard/releases/latest)
+(`voice-keyboard-v0.1.0.apk`), or build it from source (see below). You'll also
+need to run the proxy.
+
 ## Demo
 
 > 🎬 _Demo recording goes here — speak into the keyboard, watch raw STT get
