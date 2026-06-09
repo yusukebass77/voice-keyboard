@@ -110,10 +110,13 @@ supplies their own. The prompts fall back gracefully when it is absent. See
 
 The IME is a standard Gradle Android project under `whisper-to-input/android/`.
 On ARM64 build hosts (e.g. Raspberry Pi), set a local `aapt2` override in an
-un-committed `gradle.properties` (see the comment in that file). In the app's
-settings, point the endpoint at your proxy and set **Postprocessing → No
-Conversion** (the upstream default converts to Traditional Chinese, which breaks
-Japanese output).
+un-committed `gradle.properties` (see the comment in that file).
+
+> [!IMPORTANT]
+> In the Android app settings, point the endpoint at your proxy and set
+> **Postprocessing** to **No Conversion**. Some upstream `whisper-to-input`
+> builds default this to **Convert to Traditional Chinese**, which turns
+> Japanese output into garbled Traditional-Chinese text.
 
 ## Attribution & license
 

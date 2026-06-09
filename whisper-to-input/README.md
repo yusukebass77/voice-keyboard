@@ -26,6 +26,8 @@ The STT/ASR backend service can be either [OpenAI API](https://platform.openai.c
 
 5. Go to the app settings page and enter your configuration. You have 2 choices, either using the official OpenAI API with [your API key](https://platform.openai.com/api-keys) or self-host a [Whisper ASR Webservice](https://github.com/ahmetoner/whisper-asr-webservice). For more information, see the [Services](#services) section.
 
+   > **Japanese users:** set **Postprocessing** to **No Conversion**. Some upstream builds default to **Convert to Traditional Chinese**, which can garble Japanese transcription output into Traditional-Chinese text.
+
    <img src='docs/images/08-app-settings-page.jpg' width='200'>
 
    Some example configurations:
