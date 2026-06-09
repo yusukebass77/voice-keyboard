@@ -31,11 +31,6 @@ Grab the Android APK from the
 (`voice-keyboard-v0.1.0.apk`), or build it from source (see below). You'll also
 need to run the proxy.
 
-## Demo
-
-> 🎬 _Demo recording goes here — speak into the keyboard, watch raw STT get
-> refined into clean, send-ready Japanese in ~2–3 s end-to-end._
-
 ## Architecture
 
 ```mermaid
